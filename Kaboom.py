@@ -1,4 +1,39 @@
-from random import *
+# from gamebuino_meta import waitForUpdate, display, color, buttons
+from random import randint
+
+###########################################################################################################
+#######################                   Global    Variables                   #########################
+###########################################################################################################
+
+# SCREEN_WIDTH  = 80
+# SCREEN_HEIGHT = 64
+# NBCOL = 10
+# NBLI = 8
+# MODE_START    = 0
+# MODE_READY    = 1
+# MODE_PLAY     = 2
+# MODE_LOST     = 3
+# GRIS = color.DARKGRAY
+# GRISCLAIR = color.GRAY
+# VERT = color.GREEN
+# BLEU =  color.BLUE
+# ORANGE = color.ORANGE
+# VIOLET = color.PURPLE
+# ROUGE = color.RED
+# MARRON = color.BROWN
+# NOIR = color.BLACK
+
+# game = {
+#     'mode': MODE_MENU,
+#     'nbBomb': 0,
+#     'time': 0,
+#     'size': 10,
+#     'board' : None,
+#     'm' : None,
+#     'px' :  3,
+#     'py' :  3,
+# }
+
 
 ###########################################################################################################
 #######################                   Initializing    Board                   #########################
@@ -6,10 +41,10 @@ from random import *
 
 
 
-def initBoard(n):
+def initBoard(sizex,sizey):
     res  = []
-    for i in range(n):
-        res.append([0]*n)
+    for i in range(sizey):
+        res.append([0]*sizex)
     return res
 
 def isOneRange(a,b):
@@ -21,26 +56,24 @@ def isNeighbor(x1,y1,x2,y2):
         return True
     return False
 
-def spawnBombs(board, n, px, py):
+def spawnBombs(board, sizex, sizey, px, py, n):
     for i in range(n):
-        x = randint(0,n-1)
-        y = randint(0,n-1)
+        x = randint(0,sizex-1)
+        y = randint(0,sizey-1)
         while board[y][x] == -1 or isNeighbor(x,y,px,py):
-            x = randint(0,n-1)
-            y = randint(0,n-1)
+            x = randint(0,sizex-1)
+            y = randint(0,sizey-1)
         board[y][x] = -1
         for i in range(-1,2):
             for j in range(-1,2):
-                if y+i >= 0 and y+i < n and x+j >= 0 and x+j < n:   
+                if y+i >= 0 and y+i < sizey and x+j >= 0 and x+j < sizex:
                     if board[y+i][x+j] != -1:
                         board[y+i][x+j] += 1
 
-def getBoards(n, px, py):
-    board = initBoard(n)
-    marq = []
-    for i in range(n):
-        marq.append([0]*n)
-    spawnBombs(board, n, px, py)
+def getBoards(sizex, sizey, px, py,n):
+    board = initBoard(sizex,sizey)
+    marq = initBoard(sizex,sizey)
+    spawnBombs(board, sizex, sizey, px, py,n)
     return board,marq
 
 ###########################################################################################################
@@ -79,6 +112,20 @@ def printBoard(board,m,px,py):
         print('   ',end='')
     print(' |')
 
+# def displayBoard(board, m, sizex, sizey):
+#     display.setColor(GRISCLAIR)
+#     display.fillRect(0,0,SCREEN_WIDTH,SCREEN_HEIGHT)
+#     display.setColor(Gris)
+#     tcasex,tcasey = SCREEN_WIDTH/sizex, SCREEN_HEIGHT/sizey
+#     y = 0
+#     for i in range(sizey):
+#         x =0
+#         for j in range(sizex):
+#             display.drawRect(x,y,SCREEN_WIDTH,SCREEN_HEIGHT)
+#             x += tcasex
+#         y += tcasey
+
+
 
 ###########################################################################################################
 ##########################                   ACTIONS HANDLING                   ###########################
@@ -105,7 +152,10 @@ def moveRight(px,size):
     return px
 
 def placeFlag(m,px,py):
-    m[py][px] = 1
+    if m[py][px] != -1:
+        m[py][px] = 1
+    else:
+        print('Place already discovered')
 
 def getMove(board,m,px,py):
     c = input('move ?')
@@ -118,7 +168,7 @@ def getMove(board,m,px,py):
     elif c == 'd':
         px = moveRight(px,len(board))
     elif c == 'k':
-        print('discover Value')
+        propagate(board,m,px,py,len(board[0]),len(board))
     elif c == 'l':
         placeFlag(m,px,py)
     else:
@@ -129,23 +179,26 @@ def getMove(board,m,px,py):
 ##########################                   GAME    PROCESS                    ###########################
 ###########################################################################################################
 
-def propagate(board,m,px,py,size):
+def propagate(board,m,px,py,sizex,sizey):
     """
     -1: visible
      0: invisible
      1: drapeau
     """
     m[py][px] = -1
-    for i in range(-1,2):
-        for j in range(-1,2):
-            if(i == 0 and j ==0):
-                continue
-            if(px+i>=0 and px+i < size and py+j>=0 and py+j<size):
-                if board[py+j][px+i]==0 and m[py+j][px+i]==0: 
-                    m[py+j][px+i] = -1
-                    propagate(board,m,px+i,py+j,size)
-                m[py+j][px+i] = -1
-            
+    if board[py][px] == -1:
+        print("You lost")
+    else:
+        if(board[py][px]==0):
+            for i in range(-1,2):
+                for j in range(-1,2):
+                    if(i == 0 and j ==0):
+                        continue
+                    if(px+i>=0 and px+i < sizex and py+j>=0 and py+j<sizey):
+                        if board[py+j][px+i]==0 and m[py+j][px+i]==0:
+                            m[py+j][px+i] = -1
+                            propagate(board,m,px+i,py+j,sizex,sizey)
+                        m[py+j][px+i] = -1
 
 ###########################################################################################################
 ###############################                   GAME                   ##################################
@@ -153,17 +206,16 @@ def propagate(board,m,px,py,size):
 
 
 def Play():
-    size = 9
-    px,py = size//2,size//2
-    board, m = getBoards(size,px,py)
-    propagate(board,m,px,py,size)
-    printBoard(board,m,px,py)
+    sizex = 10
+    sizey = 10
+    px,py = sizex//2,sizey//2
+    board, m = getBoards(sizex,sizey,px,py,10)
+    propagate(board,m,px,py,sizex,sizey)
     while True:
-        px,py = getMove(board,m,px,py)
         printBoard(board,m,px,py)
+        px,py = getMove(board,m,px,py)
 
 # board = getBoard(6,2,1)
 # printBoard(board,2,1)
-        
-Play()
 
+Play()
