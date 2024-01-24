@@ -82,7 +82,7 @@ def getBoards(sizex, sizey, px, py,n):
 
 
 
-def printBoard(board,m,px,py):
+def printBoard(board,m,px,py,nbFlags):
     print('   ',end='')
     for i in range(len(board)):
         print("---",end='')
@@ -111,6 +111,7 @@ def printBoard(board,m,px,py):
     for i in range(px):
         print('   ',end='')
     print(' |')
+    print('Flags left : '+str(nbFlags))
 
 # def displayBoard(board, m, sizex, sizey):
 #     display.setColor(GRISCLAIR)
@@ -151,14 +152,17 @@ def moveRight(px,size):
         return px+1
     return px
 
-def placeFlag(m,px,py):
-    if m[py][px] != -1:
+def placeFlag(m,px,py,nbFlags):
+    if m[py][px] == 0 and nbFlags>0:
         m[py][px] = 1
-    else:
-        print('Place already discovered')
+        nbFlags-=1
+    elif m[py][px] == 1:
+        nbFlags+=1
+        m[py][px] = 0
+    return nbFlags
 
-def getMove(board,m,px,py):
-    c = input('move ?')
+def getMove(board,m,px,py,nbFlags):
+    c = input()
     if c == 'w':
         py = moveUp(py)
     elif c == 's':
@@ -170,10 +174,10 @@ def getMove(board,m,px,py):
     elif c == 'k':
         propagate(board,m,px,py,len(board[0]),len(board))
     elif c == 'l':
-        placeFlag(m,px,py)
+        nbFlags = placeFlag(m,px,py,nbFlags)
     else:
         print('Invalid')
-    return px,py
+    return px,py,nbFlags
 
 ###########################################################################################################
 ##########################                   GAME    PROCESS                    ###########################
@@ -208,12 +212,13 @@ def propagate(board,m,px,py,sizex,sizey):
 def Play():
     sizex = 10
     sizey = 10
+    nbFlags = 10
     px,py = sizex//2,sizey//2
     board, m = getBoards(sizex,sizey,px,py,10)
     propagate(board,m,px,py,sizex,sizey)
     while True:
-        printBoard(board,m,px,py)
-        px,py = getMove(board,m,px,py)
+        printBoard(board,m,px,py,nbFlags)
+        px,py,nbFlags = getMove(board,m,px,py,nbFlags)
 
 # board = getBoard(6,2,1)
 # printBoard(board,2,1)
