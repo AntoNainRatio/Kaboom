@@ -115,12 +115,13 @@ def getMove(board,m,px,py,nbFlags):
     elif c =='a':
         px = moveLeft(px)
     elif c == 'd':
-        px = moveRight(px,len(board))
+        px = moveRight(px,len(board[0]))
     elif c == 'k':
         propagate(board,m,px,py,len(board[0]),len(board))
     elif c == 'l':
         nbFlags = placeFlag(m,px,py,nbFlags)
     elif c == 'q':
+        print("See you later :)")
         quit()
     else:
         print('Invalid')
@@ -138,7 +139,8 @@ def propagate(board,m,px,py,sizex,sizey):
     """
     m[py][px] = -1
     if board[py][px] == -1:
-        print("You lost")
+        print("You lost..")
+        quit()
     else:
         if(board[py][px]==0):
             for i in range(-1,2):
@@ -151,17 +153,28 @@ def propagate(board,m,px,py,sizex,sizey):
                             propagate(board,m,px+i,py+j,sizex,sizey)
                         m[py+j][px+i] = -1
 
+def isFullM(m):
+    for y in range(len(m)):
+        for x in range(len(m[0])):
+            if m[y][x] == 0:
+                return False
+    return True
 
 def Play():
-    sizex = 16
-    sizey = 10
-    nbFlags = 30
+    sizex = 10
+    sizey = 8
+    nbFlags = sizex*sizey // 3
     px,py = sizex//2,sizey//2
     board, m = getBoards(sizex,sizey,px,py,nbFlags)
     propagate(board,m,px,py,sizex,sizey)
-    while True:
+    won = False
+    while not won:
         printBoard(board,m,px,py,nbFlags)
         px,py,nbFlags = getMove(board,m,px,py,nbFlags)
+        won = isFullM(m);
+    if won:
+        printBoard(board,m,px,py,nbFlags)
+        print("Congrats !! You won !")
 
 
 Play()
