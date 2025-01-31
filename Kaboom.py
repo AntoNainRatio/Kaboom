@@ -210,11 +210,11 @@ def propagate(board,m,px,py,sizex,sizey):
 
 
 def Play():
-    sizex = 10
-    sizey = 10
-    nbFlags = 10
+    sizex = 50
+    sizey = 30
+    nbFlags = 700
     px,py = sizex//2,sizey//2
-    board, m = getBoards(sizex,sizey,px,py,10)
+    board, m = getBoards(sizex,sizey,px,py,nbFlags)
     propagate(board,m,px,py,sizex,sizey)
     while True:
         printBoard(board,m,px,py,nbFlags)
