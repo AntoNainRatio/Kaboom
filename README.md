@@ -2,7 +2,9 @@
 MineSwipe Copy
  On shell 
 
-## HOW TO PLAY:
+
+
+ HOW TO PLAY:
 
  controls for moving: w,a,s,d
  
