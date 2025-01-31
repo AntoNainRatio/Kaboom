@@ -6,8 +6,8 @@ MineSwipe Copy
 
  HOW TO PLAY:
 
- controls for moving: w,a,s,d
+ -controls for moving: w,a,s,d
  
- placing a flag: l
+ -placing a flag: l
  
- discover square: k
+ -discover square: k
