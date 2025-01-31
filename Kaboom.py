@@ -1,45 +1,4 @@
-# from gamebuino_meta import waitForUpdate, display, color, buttons
 from random import randint
-
-###########################################################################################################
-#######################                   Global    Variables                   #########################
-###########################################################################################################
-
-# SCREEN_WIDTH  = 80
-# SCREEN_HEIGHT = 64
-# NBCOL = 10
-# NBLI = 8
-# MODE_START    = 0
-# MODE_READY    = 1
-# MODE_PLAY     = 2
-# MODE_LOST     = 3
-# GRIS = color.DARKGRAY
-# GRISCLAIR = color.GRAY
-# VERT = color.GREEN
-# BLEU =  color.BLUE
-# ORANGE = color.ORANGE
-# VIOLET = color.PURPLE
-# ROUGE = color.RED
-# MARRON = color.BROWN
-# NOIR = color.BLACK
-
-# game = {
-#     'mode': MODE_MENU,
-#     'nbBomb': 0,
-#     'time': 0,
-#     'size': 10,
-#     'board' : None,
-#     'm' : None,
-#     'px' :  3,
-#     'py' :  3,
-# }
-
-
-###########################################################################################################
-#######################                   Initializing    Board                   #########################
-###########################################################################################################
-
-
 
 def initBoard(sizex,sizey):
     res  = []
@@ -84,7 +43,7 @@ def getBoards(sizex, sizey, px, py,n):
 
 def printBoard(board,m,px,py,nbFlags):
     print('   ',end='')
-    for i in range(len(board)):
+    for i in range(len(board[0])):
         print("---",end='')
     print()
     for i in range(len(board)):
@@ -104,7 +63,7 @@ def printBoard(board,m,px,py,nbFlags):
                 print('   ',end='')
         print('|')
     print('   ',end='')
-    for i in range(len(board)):
+    for i in range(len(board[0])):
         print("---",end='')
     print()
     print('   ',end='')
@@ -112,20 +71,6 @@ def printBoard(board,m,px,py,nbFlags):
         print('   ',end='')
     print(' |')
     print('Flags left : '+str(nbFlags))
-
-# def displayBoard(board, m, sizex, sizey):
-#     display.setColor(GRISCLAIR)
-#     display.fillRect(0,0,SCREEN_WIDTH,SCREEN_HEIGHT)
-#     display.setColor(Gris)
-#     tcasex,tcasey = SCREEN_WIDTH/sizex, SCREEN_HEIGHT/sizey
-#     y = 0
-#     for i in range(sizey):
-#         x =0
-#         for j in range(sizex):
-#             display.drawRect(x,y,SCREEN_WIDTH,SCREEN_HEIGHT)
-#             x += tcasex
-#         y += tcasey
-
 
 
 ###########################################################################################################
@@ -175,6 +120,8 @@ def getMove(board,m,px,py,nbFlags):
         propagate(board,m,px,py,len(board[0]),len(board))
     elif c == 'l':
         nbFlags = placeFlag(m,px,py,nbFlags)
+    elif c == 'q':
+        quit()
     else:
         print('Invalid')
     return px,py,nbFlags
@@ -204,15 +151,11 @@ def propagate(board,m,px,py,sizex,sizey):
                             propagate(board,m,px+i,py+j,sizex,sizey)
                         m[py+j][px+i] = -1
 
-###########################################################################################################
-###############################                   GAME                   ##################################
-###########################################################################################################
-
 
 def Play():
-    sizex = 50
-    sizey = 30
-    nbFlags = 700
+    sizex = 16
+    sizey = 10
+    nbFlags = 30
     px,py = sizex//2,sizey//2
     board, m = getBoards(sizex,sizey,px,py,nbFlags)
     propagate(board,m,px,py,sizex,sizey)
@@ -220,7 +163,5 @@ def Play():
         printBoard(board,m,px,py,nbFlags)
         px,py,nbFlags = getMove(board,m,px,py,nbFlags)
 
-# board = getBoard(6,2,1)
-# printBoard(board,2,1)
 
 Play()
